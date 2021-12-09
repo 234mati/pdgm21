@@ -1,4 +1,4 @@
-import java.lang.reflect.Field
+import java.lang.reflect.{Field, Type}
 import scala.::
 
 object ListLab6 {
@@ -60,14 +60,14 @@ println(point.debugName)
   def multiply(x: Double, y: Double): Double = x*y
   def division(x: Double, y: Double): Double = if y==0 then 0 else x/y
 
-  class Point(xv: Int, yv: Int) extends Debug {
+  class Point(xv: Int, yv: Int) extends Debug2{
     var x: Int = xv
     var y: Int = yv
     var a: String = "test"
   }
 
   trait Debug{
-    def debugName: String = this.getClass().toString
+    def debugName: String = this.getClass().getName()
     def fieldTOList(fs: List[java.lang.reflect.Field]): List[List[String]] =
       if fs.isEmpty then List() else
         fs.head.setAccessible(true)
@@ -75,6 +75,14 @@ println(point.debugName)
     def debugVars: List[Any] = fieldTOList(this.getClass.getDeclaredFields.toList)
   }
 
+  trait Debug2{
+    def debugName: String = this.getClass().getName()
+    def fieldTOList(fs: List[java.lang.reflect.Field]): List[(String,Type,Any)] =
+      if fs.isEmpty then List() else
+        fs.head.setAccessible(true)
+        (fs.head.getName(),  fs.head.getType,  fs.head.get(this))::fieldTOList(fs.tail)
+    def debugVars: List[Any] = fieldTOList(this.getClass.getDeclaredFields.toList)
+  }
 
 
 }
